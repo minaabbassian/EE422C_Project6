@@ -205,13 +205,16 @@ public class Theater {
      * @return the best seat or null if theater is full
      */
     public Seat bestAvailableSeat() {
+    	this.log.seatLog.clear();
+    	
         for(Seat oneSeat : seatList) {
         	//return the first seat that is not yet reserved
         	if(!(oneSeat.occupied)) 
         		return oneSeat;
         	//add to the seatLog when a seat is allocated
-        	else 
-        		this.log.addSeat(oneSeat); 
+        	else {
+        		this.log.addSeat(oneSeat);
+        	}
         }
         
         //return null if the theater is full
@@ -226,7 +229,6 @@ public class Theater {
      * @return a ticket or null if a box office failed to reserve the seat
      */
     public Ticket printTicket(String boxOfficeId, Seat seat, int client) {
-        // TODO: Implement this method
         //return null if a box office failed to reserve the seat
     	if(!(seat.occupied)) 
     		return null;
@@ -238,7 +240,11 @@ public class Theater {
     	//print that ticket
     	System.out.println(oneTicket);
     	System.out.println("");
-		
+    	
+    	/////////////TESTING/////////////
+    	//System.out.println("TRANSACTION LOG");
+		//System.out.println(getTransactionLog());
+
     	return oneTicket;
     }
 

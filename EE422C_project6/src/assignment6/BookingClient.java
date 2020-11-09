@@ -155,6 +155,10 @@ public class BookingClient {
     					s.occupied = true; 
     					//print the ticket
     					oneTheater.printTicket(boxOffId, s, cIndex);
+    					
+    					//////////////////TESTING////////////////////
+    					//System.out.println(oneTheater.getSeatLog());
+    					
     					clientsWaiting = clientsWaiting - 1;
     					//go to next client index
     					cIndex = cIndex + 1;
