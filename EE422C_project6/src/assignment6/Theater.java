@@ -207,7 +207,7 @@ public class Theater {
     public Seat bestAvailableSeat() {
         for(Seat oneSeat : seatList) {
         	//return the first seat that is not yet reserved
-        	if(oneSeat.occupied == false) 
+        	if(!(oneSeat.occupied)) 
         		return oneSeat;
         	//add to the seatLog when a seat is allocated
         	else 
@@ -228,7 +228,7 @@ public class Theater {
     public Ticket printTicket(String boxOfficeId, Seat seat, int client) {
         // TODO: Implement this method
         //return null if a box office failed to reserve the seat
-    	if(seat.occupied == false) 
+    	if(!(seat.occupied)) 
     		return null;
     	
     	//create a new ticket to print
@@ -238,14 +238,6 @@ public class Theater {
     	//print that ticket
     	System.out.println(oneTicket);
     	System.out.println("");
-    	
-		//print each ticket sold to the console with a small delay for human readability
-		try {
-			//sleep for the print delay
-			Thread.sleep(getPrintDelay());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		
     	return oneTicket;
     }

@@ -150,25 +150,34 @@ public class BookingClient {
     				//get the best available seat 
     				Seat s = oneTheater.bestAvailableSeat();
     				
-    				if(s != null) {
+    				if(!(s == null)) {
     					//the seat is now occupied
     					s.occupied = true; 
     					//print the ticket
     					oneTheater.printTicket(boxOffId, s, cIndex);
-    					clientsWaiting--;
+    					clientsWaiting = clientsWaiting - 1;
     					//go to next client index
-    					cIndex++;
+    					cIndex = cIndex + 1;
     				}
     				
     				//when there are no remaining seats
     				if(s == null) {
     					//print sold out if it has not already been printed 
-    					if(soldOutPrinted == false) {
+    					if(!(soldOutPrinted)) {
     						soldOutPrinted = true;
     						System.out.println("Sorry, we are sold out!");
     					}
     					break;
     				}
+    			}
+    			
+    			
+    			//print each ticket sold to the console with a small delay for human readability
+    			try {
+    				//sleep for the print delay
+    				Thread.sleep(oneTheater.getPrintDelay());
+    			} catch (InterruptedException e) {
+    				e.printStackTrace();
     			}
     		}
     		
