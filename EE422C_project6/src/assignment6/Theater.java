@@ -15,11 +15,10 @@ import java.util.List;
 public class Theater {
 	
 	//private fields added
-	private int numRows;
-	private int numSeats;
-	private String show;
-	private ArrayList<Seat> seats;
-	private ArrayList<Ticket> ticketsSold;
+	private int rows;
+	private int seatsInRow;
+	private String showName;
+	private ArrayList<Seat> seatList;
 
     /**
      * the delay time you will use when print tickets
@@ -42,14 +41,14 @@ public class Theater {
         private int rowNum;
         private int seatNum;
         
-        //field added
-        public boolean taken;
+        //added field whether a seat is occupied or not
+        public boolean occupied;
 
         public Seat(int rowNum, int seatNum) {
             this.rowNum = rowNum;
             this.seatNum = seatNum;
-            //seats always not taken at first
-            taken = false;
+            
+            occupied = false; //initially, all seats are unoccupied
         }
 
         public int getSeatNum() {
@@ -191,49 +190,31 @@ public class Theater {
      * Constructor for the Theater class
      * @param numRows the number of rows N
      * @param seatsPerRow the number of seats in each row M
-     * @param show the string holding the show 
+     * @param show the string holding the name of the show 
      */
     public Theater(int numRows, int seatsPerRow, String show) {
-        // TODO: Implement this constructor
-    	this.show = show;
-    	this.numRows = numRows;
-    	this.numSeats = seatsPerRow;
-    	this.seats = makeSeats();
-    	this.ticketsSold = new ArrayList<Ticket>();
+    	this.showName = show;
+    	this.seatList = constructSeatList();
+    	this.rows = numRows;
+    	this.seatsInRow = seatsPerRow;
     }
     
     /**
-     * Added!!
-     * makeSeats
-     * Constructs all of the seats in the theater
-     * @return an ArrayList of seats in the theater in order of best to worst
-     */
-    private ArrayList<Seat> makeSeats(){
-    	ArrayList<Seat> seats = new ArrayList<Seat>();
-    	for(int i = 0; i < numRows; i++) {
-    		for(int j = 1; j <= numSeats; j++) {
-    			Seat s = new Seat(i, j);
-    			seats.add(s);
-    		}
-    	}
-    	return seats;	
-    }
-
-    /**
      * bestAvailableSeat
      * Calculates the best seat not yet reserved
-     *
      * @return the best seat or null if theater is full
      */
     public Seat bestAvailableSeat() {
-        // TODO: Implement this method
-        for(Seat s : seats) {
-        	if(s.taken == false) //return the first seat that is not reserved 
-        		return s;
-        	else {
-        		this.log.addSeat(s); //add to the seatLog in bestAvailableSeat()
-        	}
+        for(Seat oneSeat : seatList) {
+        	//return the first seat that is not yet reserved
+        	if(oneSeat.occupied == false) 
+        		return oneSeat;
+        	//add to the seatLog when a seat is allocated
+        	else 
+        		this.log.addSeat(oneSeat); 
         }
+        
+        //return null if the theater is full
         return null;
     }
 
@@ -247,14 +228,16 @@ public class Theater {
     public Ticket printTicket(String boxOfficeId, Seat seat, int client) {
         // TODO: Implement this method
         //return null if a box office failed to reserve the seat
-    	if(seat.taken == false) 
+    	if(seat.occupied == false) 
     		return null;
     	
-    	Ticket t = new Ticket(this.show, boxOfficeId, seat, client);
-    	ticketsSold.add(t); //add that ticket to the ArrayList of tickets sold
-    	this.log.addTicket(t); //add to the ticketLog in printTicket()
-    	System.out.println(t);
-    	return t;
+    	//create a new ticket to print
+    	Ticket oneTicket = new Ticket(this.showName, boxOfficeId, seat, client);
+    	//add to the ticketLog when a ticket is printed
+    	this.log.addTicket(oneTicket); 
+    	//print that ticket
+    	System.out.println(oneTicket);
+    	return oneTicket;
     }
 
     /**
@@ -264,7 +247,6 @@ public class Theater {
      * @return list of seats sold
      */
     public List<Seat> getSeatLog() {
-        // TODO: Implement this method
         return this.log.seatLog;
     }
 
@@ -275,8 +257,27 @@ public class Theater {
      * @return list of tickets sold
      */
     public List<Ticket> getTransactionLog() {
-        // TODO: Implement this method
     	return this.log.ticketLog;
-        //return ticketsSold;
     }
+    
+    /**
+     * Added!! Helper method for the Theater constructor 
+     * constructSeatList
+     * @return an ArrayList holding the all of the seats from best to worst 
+     */
+    private ArrayList<Seat> constructSeatList(){
+    	//initialize an ArrayList of seats
+    	ArrayList<Seat> list = new ArrayList<Seat>();
+    	//go through all seats in the theater starting with the best seat
+    	for(int j = 0; j < rows; j++) {
+    		for(int i = 1; i <= seatsInRow; i++) {
+    			//create a Seat
+    			Seat oneSeat = new Seat(j, i);
+    			//add the Seat to the list 
+    			list.add(oneSeat);
+    		}
+    	}
+    	return list;	
+    }
+
 }
