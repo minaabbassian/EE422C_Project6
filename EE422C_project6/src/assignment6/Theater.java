@@ -211,7 +211,7 @@ public class Theater {
     private ArrayList<Seat> makeSeats(){
     	ArrayList<Seat> seats = new ArrayList<Seat>();
     	for(int i = 0; i < numRows; i++) {
-    		for(int j = 0; j <= numSeats; j++) {
+    		for(int j = 1; j <= numSeats; j++) {
     			Seat s = new Seat(i, j);
     			seats.add(s);
     		}
@@ -265,7 +265,7 @@ public class Theater {
      */
     public List<Seat> getSeatLog() {
         // TODO: Implement this method
-        return null;
+        return this.log.seatLog;
     }
 
     /**
@@ -276,6 +276,7 @@ public class Theater {
      */
     public List<Ticket> getTransactionLog() {
         // TODO: Implement this method
-        return ticketsSold;
+    	return this.log.ticketLog;
+        //return ticketsSold;
     }
 }
