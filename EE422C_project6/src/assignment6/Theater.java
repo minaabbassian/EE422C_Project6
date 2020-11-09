@@ -1,9 +1,9 @@
 /* MULTITHREADING <Theater.java>
  * EE422C Project 6 submission by
  * Replace <...> with your actual data.
- * <Student Name>
- * <Student EID>
- * <Student 5-digit Unique No.>
+ * Mina Abbassian
+ * mea2947
+ * 16170
  * Slip days used: <0>
  * Fall 2020
  */
@@ -13,6 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Theater {
+	
+	//private fields added
+	private int numRows;
+	private int numSeats;
+	private String show;
+	private ArrayList<Seat> seats;
+	private ArrayList<Ticket> ticketsSold;
 
     /**
      * the delay time you will use when print tickets
@@ -34,10 +41,15 @@ public class Theater {
     static class Seat {
         private int rowNum;
         private int seatNum;
+        
+        //field added
+        public boolean taken;
 
         public Seat(int rowNum, int seatNum) {
             this.rowNum = rowNum;
             this.seatNum = seatNum;
+            //seats always not taken at first
+            taken = false;
         }
 
         public int getSeatNum() {
@@ -49,6 +61,10 @@ public class Theater {
         }
 
         @Override
+        /**
+         * toString
+         * returns a string with the row letter appended with the seat number 
+         */
         public String toString() {
             String result = "";
             int tempRowNumber = rowNum + 1;
@@ -170,21 +186,59 @@ public class Theater {
 
     } // end of class SeatLog
 
+    /**
+     * Theater
+     * Constructor for the Theater class
+     * @param numRows the number of rows N
+     * @param seatsPerRow the number of seats in each row M
+     * @param show the string holding the show 
+     */
     public Theater(int numRows, int seatsPerRow, String show) {
         // TODO: Implement this constructor
+    	this.show = show;
+    	this.numRows = numRows;
+    	this.numSeats = seatsPerRow;
+    	this.seats = makeSeats();
+    	this.ticketsSold = new ArrayList<Ticket>();
+    }
+    
+    /**
+     * Added!!
+     * makeSeats
+     * Constructs all of the seats in the theater
+     * @return an ArrayList of seats in the theater in order of best to worst
+     */
+    private ArrayList<Seat> makeSeats(){
+    	ArrayList<Seat> seats = new ArrayList<Seat>();
+    	for(int i = 0; i < numRows; i++) {
+    		for(int j = 0; j <= numSeats; j++) {
+    			Seat s = new Seat(i, j);
+    			seats.add(s);
+    		}
+    	}
+    	return seats;	
     }
 
     /**
+     * bestAvailableSeat
      * Calculates the best seat not yet reserved
      *
      * @return the best seat or null if theater is full
      */
     public Seat bestAvailableSeat() {
         // TODO: Implement this method
+        for(Seat s : seats) {
+        	if(s.taken == false) //return the first seat that is not reserved 
+        		return s;
+        	else {
+        		this.log.addSeat(s); //add to the seatLog in bestAvailableSeat()
+        	}
+        }
         return null;
     }
 
     /**
+     * printTicket
      * Prints a ticket to the console for the client after they reserve a seat.
      *
      * @param seat a particular seat in the theater
@@ -192,10 +246,19 @@ public class Theater {
      */
     public Ticket printTicket(String boxOfficeId, Seat seat, int client) {
         // TODO: Implement this method
-        return null;
+        //return null if a box office failed to reserve the seat
+    	if(seat.taken == false) 
+    		return null;
+    	
+    	Ticket t = new Ticket(this.show, boxOfficeId, seat, client);
+    	ticketsSold.add(t); //add that ticket to the ArrayList of tickets sold
+    	this.log.addTicket(t); //add to the ticketLog in printTicket()
+    	System.out.println(t);
+    	return t;
     }
 
     /**
+     * getSeatLog
      * Lists all seats sold for this theater in order of purchase.
      *
      * @return list of seats sold
@@ -206,12 +269,13 @@ public class Theater {
     }
 
     /**
+     * getTransactionLog
      * Lists all tickets sold for this theater in order of printing.
      *
      * @return list of tickets sold
      */
     public List<Ticket> getTransactionLog() {
         // TODO: Implement this method
-        return null;
+        return ticketsSold;
     }
 }

@@ -1,9 +1,9 @@
 /* MULTITHREADING <MyClass.java>
  * EE422C Project 6 submission by
  * Replace <...> with your actual data.
- * <Student Name>
- * <Student EID>
- * <Student 5-digit Unique No.>
+ * Mina Abbassian
+ * mea2947
+ * 16170
  * Slip days used: <0>
  * Fall 2020
  */
@@ -16,6 +16,8 @@ import java.lang.Thread;
 public class BookingClient {
 
     /**
+     * BookingClient
+     * Constructor for the BookingClient class
      * @param office  maps box office id to number of customers in line
      * @param theater the theater where the show is playing
      */
@@ -24,6 +26,7 @@ public class BookingClient {
     }
 
     /**
+     * simulate
      * Starts the box office simulation by creating (and starting) threads
      * for each box office to sell tickets for the given theater
      *
