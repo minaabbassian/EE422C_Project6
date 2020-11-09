@@ -19,7 +19,7 @@ public class Theater {
 	private int seatsInRow;
 	private String showName;
 	private ArrayList<Seat> seatList;
-
+	
     /**
      * the delay time you will use when print tickets
      */
@@ -194,9 +194,9 @@ public class Theater {
      */
     public Theater(int numRows, int seatsPerRow, String show) {
     	this.showName = show;
-    	this.seatList = constructSeatList();
     	this.rows = numRows;
     	this.seatsInRow = seatsPerRow;
+    	this.seatList = constructSeatList();
     }
     
     /**
@@ -237,6 +237,16 @@ public class Theater {
     	this.log.addTicket(oneTicket); 
     	//print that ticket
     	System.out.println(oneTicket);
+    	System.out.println("");
+    	
+		//print each ticket sold to the console with a small delay for human readability
+		try {
+			//sleep for the print delay
+			Thread.sleep(getPrintDelay());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
     	return oneTicket;
     }
 

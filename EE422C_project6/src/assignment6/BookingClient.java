@@ -11,6 +11,7 @@
 
 package assignment6;
 
+
 import assignment6.Theater.Seat;
 import java.util.Map;
 import java.util.ArrayList;
@@ -18,27 +19,57 @@ import java.util.HashMap;
 import java.util.List;
 import java.lang.Thread;
 
-public class BookingClient {
-	//added private fields
-	private Map<String, Integer> office;
-	private List<Thread> currentThreads;
-	private Theater theater;
-	private int client = 1;
-	private boolean printOnce = false;
 
+
+public class BookingClient {
+	
+	//added private fields
+	
+	//index of a client being processed
+	private int cIndex = 1; 
+	//holds all of the threads in this simulation
+	private List<Thread> threadList; 
+	//maps the box office IDs to the number of customers in line
+	private Map<String, Integer> boxOfficeMap; 
+	//variable to check whether the sold out statement gets printed only once
+	private boolean soldOutPrinted = false;
+	//the theater where the show is playing 
+	private Theater oneTheater;
+	
     /**
      * BookingClient
      * Constructor for the BookingClient class
      * @param office  maps box office id to number of customers in line
      * @param theater the theater where the show is playing
      */
-
     public BookingClient(Map<String, Integer> office, Theater theater) {
-        // TODO: Implement this constructor
-    	this.office = office;
-    	this.theater = theater; 
+    	this.oneTheater = theater; 
+    	this.boxOfficeMap = office;
     }
 
+    /**
+     * Added!! Helper method for simulate()
+     * constructThreadList
+     * For each box office, a thread is made 
+     * @return a list holding all of the threads in the simulation, which 
+     * 			includes one thread for each box office 
+     */
+    private List<Thread> constructThreadList(){
+    	//create an ArrayList of threads
+    	ArrayList<Thread> list = new ArrayList<Thread>();
+    	
+    	//one thread for each box office
+    	for(String officeString : boxOfficeMap.keySet()) {
+    		BoxOffice b = new BoxOffice(officeString);
+    		//create one thread for each box office 
+    		Thread oneThread = new Thread(b);
+    		list.add(oneThread);
+    	}
+    	
+    	//returns list of threads used in the simulation
+    	return list;
+    }
+    
     /**
      * simulate
      * Starts the box office simulation by creating (and starting) threads
@@ -48,38 +79,14 @@ public class BookingClient {
      * should have as many threads as there are box offices
      */
     public List<Thread> simulate() {
-        // TODO: Implement this method
-    	//create your threads
-    	currentThreads = getThreads();
-    	//start all the threads
-    	for(Thread t : currentThreads) {
-    		t.start();
+    	//create all of my threads in the simulation 
+    	threadList = constructThreadList();
+    	for(Thread oneThread : threadList) {
+    		oneThread.start(); //start each of these thread
     	}
     	
     	//return list of threads used in the simulation
-        return currentThreads;
-    }
-
-    
-    /**
-     * Added!!
-     * getThreads
-     * Makes one thread for each box office 
-     * @return list of threads used in the simulation, should have as 
-     * 			many threads as there are box offices
-     */
-    private List<Thread> getThreads(){
-    	ArrayList<Thread> threads = new ArrayList<Thread>();
-    	
-    	//thread for each box office
-    	for(String s : office.keySet()) {
-    		Task task = new Task(s);
-    		Thread thread = new Thread(task);
-    		threads.add(thread);
-    	}
-    	
-    	//returns list of threads used in the simulation
-    	return threads;
+        return threadList;
     }
     
     /**
@@ -88,79 +95,80 @@ public class BookingClient {
      * Must call simulate()
      */
     public static void main(String[] args) {
-        // TODO: Initialize test data to description
-    	Map<String, Integer> hmap = new HashMap<String, Integer>();
+    	//create a HashMap for the box office information 
+    	Map<String, Integer> hashBoxOffices = new HashMap<String, Integer>();
     	
     	//initialize the offices with the same data as the example output
-    	hmap.put("BX1", 3);
-    	hmap.put("BX3", 3);
-    	hmap.put("BX2", 4);
-    	hmap.put("BX5", 3);
-    	hmap.put("BX4", 3);
+    	hashBoxOffices.put("BX1", 3);
+    	hashBoxOffices.put("BX3", 3);
+    	hashBoxOffices.put("BX2", 4);
+    	hashBoxOffices.put("BX5", 3);
+    	hashBoxOffices.put("BX4", 3);
     	
     	//initialize the theater with the same data as the example output
-    	Theater theater = new Theater(3, 5, "Ouija");
+    	Theater t = new Theater(3, 5, "Ouija");
     	
-    	BookingClient bc = new BookingClient(hmap, theater);
-    	//must call simulate
-    	bc.simulate();
+    	//create one BookingClient 
+    	BookingClient oneBookingClient = new BookingClient(hashBoxOffices, t);
+    	
+    	//call simulate
+    	oneBookingClient.simulate();
     }
     
     /**
      * Added!!
-     * Task class
-     * This class is used for each box office thread to perform 
-     *
+     * BoxOffice class
+     * This class is used to perform each box office thread
      */
-    private class Task implements Runnable {
+    private class BoxOffice implements Runnable {
     	//added private field
-    	private String officeID; 
+    	private String boxOffId; 
     	
     	/**
-    	 * Task
-    	 * Constructor for the Task class
-    	 * @param ID the ID of the box office for the thread
+    	 * BoxOffice
+    	 * Constructor for the BoxOffice class
+    	 * @param name the Box Office ID of the office corresponding to the thread
     	 */
-    	private Task(String ID) {
-    		officeID = ID;
+    	private BoxOffice(String name) {
+    		boxOffId = name;
     	}
     	
     	/**
     	 * run
-    	 * Runs the actual task of assigning each client in the box office a seat
-    	 * Follows the pseudocode in the document that clients are processed according to
-    	 * Synchronizes threads based off the theater access
+    	 * Synchronizes the box office threads 
+    	 * Processes each client at a box office and assigns each a seat according to the 
+    	 *  pseudocode in the assignment 6 document 
+    	 * 
     	 */
     	@Override
     	public void run() {
     		//gets the number of customers in line at the box office
-    		int customersInLine = office.get(officeID);
-    		while(customersInLine > 0) {
-    			//synchronize it where only one thread can access theater at a time
-    			synchronized(theater) {
-    				//get the best available seat
-    				Seat bestSeat = theater.bestAvailableSeat();
-    				if(bestSeat != null) {
-    					bestSeat.taken = true;
-    					theater.printTicket(officeID, bestSeat, client);
-    					client++;
-    					customersInLine--;
+    		int clientsWaiting = boxOfficeMap.get(boxOffId);
+    		while(clientsWaiting > 0) {
+    			//synchronization 
+    			synchronized(oneTheater) { //theater is accessed by a single thread 
+    				//get the best available seat 
+    				Seat s = oneTheater.bestAvailableSeat();
+    				
+    				if(s != null) {
+    					//the seat is now occupied
+    					s.occupied = true; 
+    					//print the ticket
+    					oneTheater.printTicket(boxOffId, s, cIndex);
+    					clientsWaiting--;
+    					//go to next client index
+    					cIndex++;
     				}
-    				//if no more seats in the theater then sold out
-    				if(bestSeat == null) {
-    					if(printOnce == false) {
+    				
+    				//when there are no remaining seats
+    				if(s == null) {
+    					//print sold out if it has not already been printed 
+    					if(soldOutPrinted == false) {
+    						soldOutPrinted = true;
     						System.out.println("Sorry, we are sold out!");
-    						printOnce = true;
     					}
     					break;
     				}
-    			}
-    			
-    			//Delays the print delay for readability
-    			try {
-    				Thread.sleep(theater.getPrintDelay());
-    			} catch (InterruptedException e) {
-    				e.printStackTrace();
     			}
     		}
     		
@@ -168,6 +176,9 @@ public class BookingClient {
     	
     }
 }
+
+
+
 
 
 
